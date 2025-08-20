@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import * as path from 'path'
-import artifact, {ArtifactNotFoundError} from '@actions/artifact'
-import {run} from '../src/download-artifact'
-import {Inputs} from '../src/constants'
+import artifact, { ArtifactNotFoundError } from '@actions/artifact'
+import { run } from '../src/download-artifact'
+import { Inputs } from '../src/constants'
 
 jest.mock('@actions/github', () => ({
   context: {
@@ -18,7 +18,7 @@ jest.mock('@actions/github', () => ({
 jest.mock('@actions/core')
 
 /* eslint-disable no-unused-vars */ /* eslint-disable  @typescript-eslint/no-explicit-any */
-const mockInputs = (overrides?: Partial<{[K in Inputs]?: any}>) => {
+const mockInputs = (overrides?: Partial<{ [K in Inputs]?: any }>) => {
   const inputs = {
     [Inputs.Name]: 'artifact-name',
     [Inputs.Path]: '/some/artifact/path',
@@ -26,15 +26,16 @@ const mockInputs = (overrides?: Partial<{[K in Inputs]?: any}>) => {
     [Inputs.Repository]: 'owner/some-repository',
     [Inputs.RunID]: 'some-run-id',
     [Inputs.Pattern]: 'some-pattern',
+    [Inputs.Verbose]: false,
     ...overrides
   }
 
-  ;(core.getInput as jest.Mock).mockImplementation((name: string) => {
-    return inputs[name]
-  })
-  ;(core.getBooleanInput as jest.Mock).mockImplementation((name: string) => {
-    return inputs[name]
-  })
+    ; (core.getInput as jest.Mock).mockImplementation((name: string) => {
+      return inputs[name]
+    })
+    ; (core.getBooleanInput as jest.Mock).mockImplementation((name: string) => {
+      return inputs[name]
+    })
 
   return inputs
 }
@@ -47,13 +48,13 @@ describe('download', () => {
     // Mock artifact client methods
     jest
       .spyOn(artifact, 'listArtifacts')
-      .mockImplementation(() => Promise.resolve({artifacts: []}))
+      .mockImplementation(() => Promise.resolve({ artifacts: [] }))
     jest.spyOn(artifact, 'getArtifact').mockImplementation(name => {
       throw new ArtifactNotFoundError(`Artifact '${name}' not found`)
     })
     jest
       .spyOn(artifact, 'downloadArtifact')
-      .mockImplementation(() => Promise.resolve({digestMismatch: false}))
+      .mockImplementation(() => Promise.resolve({ digestMismatch: false }))
   })
 
   test('downloads a single artifact by name', async () => {
@@ -66,7 +67,7 @@ describe('download', () => {
 
     jest
       .spyOn(artifact, 'getArtifact')
-      .mockImplementation(() => Promise.resolve({artifact: mockArtifact}))
+      .mockImplementation(() => Promise.resolve({ artifact: mockArtifact }))
 
     await run()
 
@@ -96,19 +97,19 @@ describe('download', () => {
     })
 
     const mockArtifacts = [
-      {id: 123, name: 'artifact1', size: 1024, digest: 'abc123'},
-      {id: 456, name: 'artifact2', size: 2048, digest: 'def456'}
+      { id: 123, name: 'artifact1', size: 1024, digest: 'abc123' },
+      { id: 456, name: 'artifact2', size: 2048, digest: 'def456' }
     ]
 
     // Set up artifact mock after clearing mocks
     jest
       .spyOn(artifact, 'listArtifacts')
-      .mockImplementation(() => Promise.resolve({artifacts: mockArtifacts}))
+      .mockImplementation(() => Promise.resolve({ artifacts: mockArtifacts }))
 
     // Reset downloadArtifact mock as well
     jest
       .spyOn(artifact, 'downloadArtifact')
-      .mockImplementation(() => Promise.resolve({digestMismatch: false}))
+      .mockImplementation(() => Promise.resolve({ digestMismatch: false }))
 
     await run()
 
@@ -121,7 +122,7 @@ describe('download', () => {
   })
 
   test('sets download path output even when no artifacts are found', async () => {
-    mockInputs({[Inputs.Name]: ''})
+    mockInputs({ [Inputs.Name]: '' })
 
     await run()
 
@@ -139,13 +140,13 @@ describe('download', () => {
 
   test('filters artifacts by pattern', async () => {
     const mockArtifacts = [
-      {id: 123, name: 'test-artifact', size: 1024, digest: 'abc123'},
-      {id: 456, name: 'prod-artifact', size: 2048, digest: 'def456'}
+      { id: 123, name: 'test-artifact', size: 1024, digest: 'abc123' },
+      { id: 456, name: 'prod-artifact', size: 2048, digest: 'def456' }
     ]
 
     jest
       .spyOn(artifact, 'listArtifacts')
-      .mockImplementation(() => Promise.resolve({artifacts: mockArtifacts}))
+      .mockImplementation(() => Promise.resolve({ artifacts: mockArtifacts }))
 
     mockInputs({
       [Inputs.Name]: '',
@@ -173,7 +174,7 @@ describe('download', () => {
 
     jest
       .spyOn(artifact, 'listArtifacts')
-      .mockImplementation(() => Promise.resolve({artifacts: []}))
+      .mockImplementation(() => Promise.resolve({ artifacts: [] }))
 
     await run()
 
@@ -210,11 +211,11 @@ describe('download', () => {
 
     jest
       .spyOn(artifact, 'getArtifact')
-      .mockImplementation(() => Promise.resolve({artifact: mockArtifact}))
+      .mockImplementation(() => Promise.resolve({ artifact: mockArtifact }))
 
     jest
       .spyOn(artifact, 'downloadArtifact')
-      .mockImplementation(() => Promise.resolve({digestMismatch: true}))
+      .mockImplementation(() => Promise.resolve({ digestMismatch: true }))
 
     await run()
 
@@ -259,9 +260,9 @@ describe('download', () => {
 
   test('downloads multiple artifacts by ID', async () => {
     const mockArtifacts = [
-      {id: 123, name: 'first-artifact', size: 1024, digest: 'abc123'},
-      {id: 456, name: 'second-artifact', size: 2048, digest: 'def456'},
-      {id: 789, name: 'third-artifact', size: 3072, digest: 'ghi789'}
+      { id: 123, name: 'first-artifact', size: 1024, digest: 'abc123' },
+      { id: 456, name: 'second-artifact', size: 2048, digest: 'def456' },
+      { id: 789, name: 'third-artifact', size: 3072, digest: 'ghi789' }
     ]
 
     mockInputs({
@@ -296,7 +297,7 @@ describe('download', () => {
 
   test('warns when some artifact IDs are not found', async () => {
     const mockArtifacts = [
-      {id: 123, name: 'found-artifact', size: 1024, digest: 'abc123'}
+      { id: 123, name: 'found-artifact', size: 1024, digest: 'abc123' }
     ]
 
     mockInputs({
