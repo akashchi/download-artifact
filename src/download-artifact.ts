@@ -6,7 +6,7 @@ import type { Artifact, FindOptions } from '@actions/artifact'
 import { Minimatch } from 'minimatch'
 import { Inputs, Outputs } from './constants'
 
-const PARALLEL_DOWNLOADS = 5
+const PARALLEL_DOWNLOADS = 1
 
 // Helper function for verbose logging
 const verboseLog = (message: string, verbose: boolean): void => {
