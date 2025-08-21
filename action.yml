@@ -35,6 +35,10 @@ inputs:
       If github-token is specified, this is the run that artifacts will be downloaded from.'
     required: false
     default: ${{ github.run_id }}
+  verbose:
+    description: 'Enable verbose logging for troubleshooting download issues.'
+    required: false
+    default: 'true'
 outputs:
   download-path:
     description: 'Path of artifact download'

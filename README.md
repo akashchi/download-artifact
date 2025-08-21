@@ -120,6 +120,11 @@ You are welcome to still raise bugs in this repo.
     # If github-token is specified, this is the run that artifacts will be downloaded from.
     # Optional. Default is ${{ github.run_id }}
     run-id:
+
+    # Enable verbose logging for troubleshooting download issues.
+    # When enabled, provides detailed logs throughout the download process.
+    # Optional. Default is 'false'
+    verbose:
 ```
 
 ### Outputs
@@ -305,6 +310,47 @@ steps:
     github-token: ${{ secrets.GH_PAT }} # token with actions:read permissions on target repo
     repository: actions/toolkit
     run-id: 1234
+```
+
+## Troubleshooting
+
+### Verbose Logging
+
+If you're experiencing silent download failures or need to debug download issues, enable verbose logging:
+
+```yaml
+steps:
+- uses: actions/download-artifact@v5
+  with:
+    name: my-artifact
+    verbose: true
+```
+
+When `verbose: true` is set, the action will output detailed information about:
+
+- Input parameter parsing and validation
+- Path resolution and directory creation
+- Artifact discovery and filtering
+- Individual download progress and completion
+- Error details and stack traces
+- Digest validation results
+
+The verbose logs are prefixed with `[VERBOSE]` and can help identify:
+
+- **Network connectivity issues** during artifact API calls
+- **Permission problems** with token authentication or file system access
+- **Path resolution issues** with tilde expansion or directory creation
+- **Artifact availability** and metadata retrieval problems
+- **Download process failures** in the underlying artifact client
+
+Example verbose output:
+```
+[VERBOSE] Starting download-artifact action with inputs: {...}
+[VERBOSE] No path provided, using default: /github/workspace
+[VERBOSE] Download mode: single artifact by name
+[VERBOSE] Starting download 1/1: 'my-artifact' (ID: 12345) to /github/workspace
+[VERBOSE] Completed download: 'my-artifact' (digestMismatch: false)
+[VERBOSE] Action completed successfully - all 1 artifacts downloaded
 ```
 
 ## Limitations
